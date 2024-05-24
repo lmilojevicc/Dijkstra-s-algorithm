@@ -56,8 +56,36 @@ public class Main {
     }
 
     private static void connectNodes() {
+        if (nodes.size() < 2) {
+            System.out.println("Insufficient number of nodes. Create at least two nodes.");
+            return;
+        }
+
+        System.out.println("Nodes: ");
+        for (int i = 0; i < nodes.size(); i++) {
+            System.out.println((i + 1) + "." + nodes.get(i).value);
+        }
+
+        System.out.print("Select source node: ");
+        int sourceIndex = scanner.nextInt() - 1;
+        System.out.print("Select destination node: ");
+        int destinationIndex = scanner.nextInt() - 1;
+        System.out.print("Enter weight: ");
+        int weight = scanner.nextInt();
+        scanner.nextLine();
+
+        Node source = nodes.get(sourceIndex);
+        Node destination = nodes.get(destinationIndex);
+
+        source.addEdgeBidirectional(destination, weight);
+
+        System.out.println("Created an edge between " + source.value + " and " + destination.value + " with weight " + weight);
     }
 
     private static void createNode() {
+        System.out.print("Enter Node value: ");
+        String value = scanner.nextLine();
+        nodes.add(new Node(value));
+        System.out.print("Node created successfully");
     }
 }
