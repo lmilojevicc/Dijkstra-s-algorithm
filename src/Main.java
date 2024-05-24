@@ -1,13 +1,34 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     private static List<Node> nodes = new ArrayList<>();
     private static Scanner scanner = new Scanner(System.in);
 
+    private static void createGraph() {
+        Node a = new Node("A");
+        Node b = new Node("B");
+        Node c = new Node("C");
+        Node d = new Node("D");
+        Node e = new Node("E");
+
+        nodes.add(a);
+        nodes.add(b);
+        nodes.add(c);
+        nodes.add(d);
+        nodes.add(e);
+
+        a.addEdgeBidirectional(b, 5);
+        a.addEdgeBidirectional(c, 3);
+        b.addEdgeBidirectional(c, 2);
+        b.addEdgeBidirectional(d, 4);
+        c.addEdgeBidirectional(d, 6);
+        c.addEdgeBidirectional(e, 7);
+        d.addEdgeBidirectional(e, 8);
+    }
+
     public static void main(String[] args) {
         boolean isRunning = true;
+        createGraph();
         while (isRunning) {
             System.out.println("\nMenu:");
             System.out.println("1. Create Node");
@@ -70,6 +91,69 @@ public class Main {
     }
 
     private static void findShortestPath() {
+        if (nodes.size() < 2) {
+            System.out.println("Insufficient nodes to find shortest path. Please create at least two nodes.");
+            return;
+        }
+
+        System.out.println("Nodes:");
+        for (int i = 0; i < nodes.size(); i++) {
+            System.out.println((i + 1) + ". " + nodes.get(i).value);
+        }
+
+        System.out.print("Select source node: ");
+        int sourceIndex = scanner.nextInt() - 1;
+        System.out.print("Select destination node: ");
+        int destinationIndex = scanner.nextInt() - 1;
+        scanner.nextLine();
+
+        Node source = nodes.get(sourceIndex);
+        Node destination = nodes.get(destinationIndex);
+
+        Map<Node, Integer> distance = new HashMap<>();
+        Map<Node, Node> previous = new HashMap<>();
+        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparing(distance::get));
+
+        for (Node node : nodes) {
+            distance.put(node, Integer.MAX_VALUE);
+            previous.put(node, null);
+        }
+        distance.put(source, 0);
+
+        pq.add(source);
+        while (!pq.isEmpty()) {
+            Node current = pq.poll();
+
+            if (current == destination) {
+                break;
+            }
+
+            for (Edge edge : current.edges) {
+                int newDistance = distance.get(current) + edge.weight;
+                if (newDistance < distance.get(edge.destination)) {
+                    distance.put(edge.destination, newDistance);
+                    previous.put(edge.destination, current);
+                    pq.add(edge.destination);
+                }
+            }
+        }
+
+        LinkedList<Node> path = new LinkedList<>();
+        Node current = destination;
+        while (current != null) {
+            path.addFirst(current);
+            current = previous.get(current);
+        }
+
+        if (path.getFirst() == source) {
+            System.out.println("Shortest path from " + source.value + " to " + destination.value + ":");
+            for (Node node : path) {
+                System.out.print(node.value + " -> ");
+            }
+            System.out.println("Distance: " + distance.get(destination));
+        } else {
+            System.out.println("There is no path from " + source.value + " to " + destination.value);
+        }
     }
 
     private static void connectNodes() {
