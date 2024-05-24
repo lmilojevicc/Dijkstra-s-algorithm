@@ -88,6 +88,51 @@ public class Main {
     }
 
     private static void findShortestPathsFromSource() {
+        if (nodes.isEmpty()) {
+            System.out.println("No nodes in the graph. Please create nodes first.");
+            return;
+        }
+
+        System.out.println("Nodes:");
+        for (int i = 0; i < nodes.size(); i++) {
+            System.out.println((i + 1) + ". " + nodes.get(i).value);
+        }
+
+        System.out.print("Select source node: ");
+        int sourceIndex = scanner.nextInt() - 1;
+        scanner.nextLine();
+
+        Node source = nodes.get(sourceIndex);
+
+        Map<Node, Integer> distance = new HashMap<>();
+        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingInt(distance::get));
+
+        for (Node node : nodes) {
+            distance.put(node, Integer.MAX_VALUE);
+        }
+
+        distance.put(source, 0);
+        pq.add(source);
+        while (!pq.isEmpty()) {
+            Node current = pq.poll();
+
+            for (Edge edge : current.edges) {
+                int newDistance = distance.get(current) + edge.weight;
+                if (newDistance < distance.get(edge.destination)) {
+                    distance.put(edge.destination, newDistance);
+                    pq.add(edge.destination);
+                }
+            }
+        }
+
+        System.out.println("Shortest distances from node " + source.value + ":");
+        for (Node node : nodes) {
+            if (node != source) {
+                int dist = distance.get(node);
+                System.out.println(source.value + " -> " + node.value + ": " + (dist == Integer.MAX_VALUE ? "No path" : dist));
+            }
+        }
+
     }
 
     private static void findShortestPath() {
