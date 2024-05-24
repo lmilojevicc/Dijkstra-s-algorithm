@@ -1,34 +1,12 @@
 import java.util.*;
 
 public class Main {
-    private static List<Node> nodes = new ArrayList<>();
     private static Scanner scanner = new Scanner(System.in);
-
-    private static void createGraph() {
-        Node a = new Node("A");
-        Node b = new Node("B");
-        Node c = new Node("C");
-        Node d = new Node("D");
-        Node e = new Node("E");
-
-        nodes.add(a);
-        nodes.add(b);
-        nodes.add(c);
-        nodes.add(d);
-        nodes.add(e);
-
-        a.addEdgeBidirectional(b, 5);
-        a.addEdgeBidirectional(c, 3);
-        b.addEdgeBidirectional(c, 2);
-        b.addEdgeBidirectional(d, 4);
-        c.addEdgeBidirectional(d, 6);
-        c.addEdgeBidirectional(e, 7);
-        d.addEdgeBidirectional(e, 8);
-    }
+    private static Graph graph = new Graph();
+    private static List<Node> nodes = graph.nodes;
 
     public static void main(String[] args) {
         boolean isRunning = true;
-        createGraph();
         while (isRunning) {
             System.out.println("\nMenu:");
             System.out.println("1. Create Node");
@@ -36,7 +14,9 @@ public class Main {
             System.out.println("3. Find Shortest Path (Source and Target)");
             System.out.println("4. Find Shortest Path (Source)");
             System.out.println("5. Display linked list of the graph");
-            System.out.println("6. Exit");
+            System.out.println("6. Generate random graph");
+            System.out.println("7. Generate default graph");
+            System.out.println("8. Exit");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -55,9 +35,15 @@ public class Main {
                     findShortestPathsFromSource();
                     break;
                 case 5:
-                    printLinkedList();
+                    graph.printAsLinkedList();
                     break;
                 case 6:
+                    graph.generateRandomGraph();
+                    break;
+                case 7:
+                    graph.generateDefaultGraph();
+                    break;
+                case 8:
                     isRunning = false;
                     break;
                 default:
@@ -65,26 +51,6 @@ public class Main {
             }
         }
         scanner.close();
-    }
-
-    private static void printLinkedList() {
-        System.out.println("Graph as Linked list:");
-        for (Node node : nodes) {
-            System.out.print(node.value + ". ");
-            if (node.edges.isEmpty()) {
-                System.out.println("null");
-            } else {
-                for (int i = 0; i < node.edges.size(); i++) {
-                    Edge edge = node.edges.get(i);
-                    System.out.print("(" + edge.destination.value + "," + edge.weight + ")");
-                    if (i < node.edges.size() - 1) {
-                        System.out.print("->");
-                    } else {
-                        System.out.println("->null");
-                    }
-                }
-            }
-        }
     }
 
     private static void findShortestPathsFromSource() {
